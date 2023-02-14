@@ -4,45 +4,48 @@ const { Knight } = require("./pieces/knight");
 const { Pawn } = require("./pieces/pawn");
 const { Queen } = require("./pieces/queen");
 const { Rook } = require("./pieces/rook");
+const { moveFilter } = require("./move-filter");
 
 const letters = ["a","b","c","d","e","f","g","h"]
 
 class Board {
     constructor() {
         this.layout = new Map([
-            ["a1", new Rook(true,this,"a1")],
-            ["b1", new Knight(true,this,"b1")],
-            ["c1", new Bishop(true,this,"c1")],
-            ["d1", new Queen(true,this,"d1")],
-            ["e1", new King(true,this,"e1")],
-            ["f1", new Bishop(true,this,"f1")],
-            ["g1", new Knight(true,this,"g1")],
-            ["h1", new Rook(true,this,"h1")],
-            ["a2", new Pawn(true,this,"a2")],
-            ["b2", new Pawn(true,this,"b2")],
-            ["c2", new Pawn(true,this,"c2")],
-            ["d2", new Pawn(true,this,"d2")],
-            ["e2", new Pawn(true,this,"e2")],
-            ["f2", new Pawn(true,this,"f2")],
-            ["g2", new Pawn(true,this,"g2")],
-            ["h2", new Pawn(true,this,"h2")],
-            ["a8", new Rook(false,this,"a8")],
-            ["b8", new Knight(false,this,"b8")],
-            ["c8", new Bishop(false,this,"c8")],
-            ["d8", new Queen(false,this,"d8")],
-            ["e8", new King(false,this,"e8")],
-            ["f8", new Bishop(false,this,"f8")],
-            ["g8", new Knight(false,this,"g8")],
-            ["h8", new Rook(false,this,"h8")],
-            ["a7", new Pawn(false,this,"a7")],
-            ["b7", new Pawn(false,this,"b7")],
-            ["c7", new Pawn(false,this,"c7")],
-            ["d7", new Pawn(false,this,"d7")],
-            ["e7", new Pawn(false,this,"e7")],
-            ["f7", new Pawn(false,this,"f7")],
-            ["g7", new Pawn(false,this,"g7")],
-            ["h7", new Pawn(false,this,"h7")],
+            [new Rook(true,this,"a1"),"a1"],
+            [new Knight(true,this,"b1"),"b1"],
+            [new Bishop(true,this,"c1"),"c1"],
+            [new Queen(true,this,"d1"),"d1"],
+            [new King(true,this,"e1"),"e1"],
+            [new Bishop(true,this,"f1"),"f1"],
+            [new Knight(true,this,"g1"),"g1"],
+            [new Rook(true,this,"h1"),"h1"],
+            [new Pawn(true,this,"a2"),"a2"],
+            [new Pawn(true,this,"b2"),"b2"],
+            [new Pawn(true,this,"c2"),"c2"],
+            [new Pawn(true,this,"d2"),"d2"],
+            [new Pawn(true,this,"e2"),"e2"],
+            [new Pawn(true,this,"f2"),"f2"],
+            [new Pawn(true,this,"g2"),"g2"],
+            [new Pawn(true,this,"h2"),"h2"],
+            [new Rook(false,this,"a8"),"a8"],
+            [new Knight(false,this,"b8"),"b8"],
+            [new Bishop(false,this,"c8"),"c8"],
+            [new Queen(false,this,"d8"),"d8"],
+            [new King(false,this,"e8"),"e8"],
+            [new Bishop(false,this,"f8"),"f8"],
+            [new Knight(false,this,"g8"),"g8"],
+            [new Rook(false,this,"h8"),"h8"],
+            [new Pawn(false,this,"a7"),"a7"],
+            [new Pawn(false,this,"b7"),"b7"],
+            [new Pawn(false,this,"c7"),"c7"],
+            [new Pawn(false,this,"d7"),"d7"],
+            [new Pawn(false,this,"e7"),"e7"],
+            [new Pawn(false,this,"f7"),"f7"],
+            [new Pawn(false,this,"g7"),"g7"],
+            [new Pawn(false,this,"h7"),"h7"],
         ]);
+        this.wasWhiteLastMove = false;
+        this.moves = [];
     }
 
     getNextSquare(square,white){
@@ -111,9 +114,38 @@ class Board {
 
     getPiece(square) {
         if (square == undefined) return undefined;
-        const piece = this.layout.get(square);
+        const piece = () => {
+            let p = undefined;
+            this.layout.forEach((piece,value) => {
+                if (piece.position === square) p = piece;
+            })
+
+            return p;
+        }
 
         return piece;
+    }
+
+    getKing(white){
+        if (white) {
+            for (piece in this.layout.keys()){
+                if (piece instanceof King){
+                    if (piece.white === white){
+                        return piece;
+                    }
+                }
+            }
+        }
+        return undefined;
+    }
+
+    move(piece, move) {
+        const moves = piece.possibleMoves();
+        if (!moves.includes(move)) return false;
+
+        moveFilter(moves,this, piece);
+
+        if (!moves.includes(move)) return false;
     }
 }
 

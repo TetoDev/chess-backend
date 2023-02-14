@@ -1,14 +1,14 @@
+const http = require("http");
+const rooms = require("../game/room.js");
 
 function createServer() {
-  const http = require("http");
-  const rooms = require("../game/room.js");
 
   const server = http.createServer((request, response) => {
     const { method, url, headers } = request;
 
     // Creating new room
     if (method === "GET") {
-        const room = new rooms.room();
+        const room = new rooms.Room();
         const id = room.id;
     }
     // Setting move

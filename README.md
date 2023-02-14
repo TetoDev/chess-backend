@@ -1,2 +1,2 @@
 # chess-backend
-Ches backend for the chess website that I made
+Chess backend for the chess website that I made

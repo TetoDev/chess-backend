@@ -12,6 +12,7 @@ class Piece {
     remove(){
         this = NaN;
     }
+
 }
 
 module.exports = {
